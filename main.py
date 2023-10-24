@@ -12,23 +12,23 @@ def start_long_polling(url, headers, bot, chat_id):
         try:
             response = requests.get(url, headers=headers, params=params)
             response.raise_for_status()
-            response_json = response.json()
-            if response_json['status'] == 'timeout':
-                params['timestamp'] = response_json['timestamp_to_request']
+            api_response = response.json()
+            if api_response['status'] == 'timeout':
+                params['timestamp'] = api_response['timestamp_to_request']
                 continue
 
-            lesson_title = response_json['new_attempts'][0]['lesson_title']
-            lesson_url = response_json['new_attempts'][0]['lesson_url']
-            if response_json['new_attempts'][0]['is_negative']:
+            lesson_title = api_response['new_attempts'][0]['lesson_title']
+            lesson_url = api_response['new_attempts'][0]['lesson_url']
+            if api_response['new_attempts'][0]['is_negative']:
                 verification_message = 'К сожалению, в работе нашлись ошибки.'
             else:
                 verification_message = 'Преподавателю всё понравилось, можно приступать к следующему уроку.'
             send_message = f'У вас проверили работу "{lesson_title}"\n{lesson_url}\n{verification_message}'
             bot.send_message(text=send_message, chat_id=chat_id)
 
-            params['timestamp'] = response_json['last_attempt_timestamp']
+            params['timestamp'] = api_response['last_attempt_timestamp']
         except requests.exceptions.ReadTimeout:
-            traceback.print_exc()
+            pass
         except requests.ConnectionError:
             traceback.print_exc()
             time.sleep(10)
@@ -44,6 +44,3 @@ if __name__ == '__main__':
     devman_long_polling_url = 'https://dvmn.org/api/long_polling/'
     devman_headers = {'Authorization': f'Token {devman_api_token}'}
     start_long_polling(devman_long_polling_url, devman_headers, bot, telegram_chat_id)
-
-
-
