@@ -66,4 +66,4 @@ if __name__ == '__main__':
         start_long_polling(devman_long_polling_url, devman_headers, bot, telegram_chat_id)
     except Exception as error:
         bot.send_message(text='Бот упал с ошибкой:', chat_id=telegram_chat_id)
-        logger.error(error)
+        logger.exception(error)
