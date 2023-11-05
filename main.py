@@ -19,8 +19,9 @@ class TelegramLogsHandler(logging.Handler):
         self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
-def start_long_polling(url, headers, bot, chat_id):
+def start_long_polling(url, headers, bot, chat_id, logger):
     params = {}
+    logger.info('Бот запущен')
     while True:
         try:
             response = requests.get(url, headers=headers, params=params)
@@ -43,27 +44,30 @@ def start_long_polling(url, headers, bot, chat_id):
         except requests.exceptions.ReadTimeout:
             pass
         except requests.ConnectionError:
+            logger.exception('Ошибка подключения!')
             traceback.print_exc()
             time.sleep(10)
+        except Exception as error:
+            logger.exception(error)
+            traceback.print_exc()
+            break
 
 
 if __name__ == '__main__':
     load_dotenv()
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
+    telegram_notification_token = os.environ['TELEGRAM_NOTIFICATION_TOKEN']
+
+    notification_bot = telegram.Bot(token=telegram_notification_token)
     bot = telegram.Bot(token=telegram_token)
 
     logger = logging.getLogger('Logger')
     logger.setLevel(logging.INFO)
-    logger.addHandler(TelegramLogsHandler(bot, telegram_chat_id))
+    logger.addHandler(TelegramLogsHandler(notification_bot, telegram_chat_id))
 
     devman_api_token = os.environ['DEVMAN_API_TOKEN']
     devman_long_polling_url = 'https://dvmn.org/api/long_polling/'
     devman_headers = {'Authorization': f'Token {devman_api_token}'}
 
-    try:
-        logger.info('Бот запущен')
-        start_long_polling(devman_long_polling_url, devman_headers, bot, telegram_chat_id)
-    except Exception as error:
-        bot.send_message(text='Бот упал с ошибкой:', chat_id=telegram_chat_id)
-        logger.exception(error)
+    start_long_polling(devman_long_polling_url, devman_headers, bot, telegram_chat_id, logger)
