@@ -16,6 +16,7 @@ pip install -r requirements.txt
 DEVMAN_API_TOKEN= devman токен
 TELEGRAM_TOKEN= токен телеграмм бота
 TELEGRAM_CHAT_ID= ID в телеграмме
+TELEGRAM_NOTIFICATION_TOKEN=токен для 2 бота уведомлений
 ```
 ## Как запустить
 Запустите скрипт
@@ -25,7 +26,7 @@ python main.py
 
 ## Примечания
 
-- Для работы скрипта необходимо иметь API-токен Telegram бота. Вы можете получить его, создав бота через [BotFather](https://core.telegram.org/bots#botfather).
+- Для работы скрипта необходимо иметь 2 API-токена Telegram (1 бот для отправки уведомлений о проверенных работах, 2 бот для отправки уведомлений о работе 1 бота). Вы можете получить их, создав ботов через [BotFather](https://core.telegram.org/bots#botfather).
 - Для корректной работы скрипта, убедитесь, что у вас есть `chat_id`, который представляет уникальный идентификатор чата в Telegram. Можно узнать сво ID  у бота [userinfobot](https://t.me/userinfobot).
 - Для работы с API Devman необходимо ознакомиться с [документацией](https://dvmn.org/api/docs/).
 
