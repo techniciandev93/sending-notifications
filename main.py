@@ -1,9 +1,22 @@
+import logging
 import os
 import time
 import traceback
 import requests
 import telegram
 from dotenv import load_dotenv
+
+
+class TelegramLogsHandler(logging.Handler):
+
+    def __init__(self, tg_bot, chat_id):
+        super().__init__()
+        self.chat_id = chat_id
+        self.tg_bot = tg_bot
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
 def start_long_polling(url, headers, bot, chat_id):
@@ -40,7 +53,17 @@ if __name__ == '__main__':
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
     bot = telegram.Bot(token=telegram_token)
 
+    logger = logging.getLogger('Logger')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(TelegramLogsHandler(bot, telegram_chat_id))
+
     devman_api_token = os.environ['DEVMAN_API_TOKEN']
     devman_long_polling_url = 'https://dvmn.org/api/long_polling/'
     devman_headers = {'Authorization': f'Token {devman_api_token}'}
-    start_long_polling(devman_long_polling_url, devman_headers, bot, telegram_chat_id)
+
+    try:
+        logger.info('Бот запущен')
+        start_long_polling(devman_long_polling_url, devman_headers, bot, telegram_chat_id)
+    except Exception as error:
+        bot.send_message(text='Бот упал с ошибкой:', chat_id=telegram_chat_id)
+        logger.error(error)
