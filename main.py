@@ -44,7 +44,7 @@ def start_long_polling(url, headers, bot, chat_id, logger):
         except requests.exceptions.ReadTimeout:
             pass
         except requests.ConnectionError:
-            logger.exception('Ошибка подключения!')
+            logger.error('Ошибка подключения!')
             traceback.print_exc()
             time.sleep(10)
         except Exception as error:
