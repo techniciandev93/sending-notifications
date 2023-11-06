@@ -7,6 +7,9 @@ import telegram
 from dotenv import load_dotenv
 
 
+logger = logging.getLogger('Logger')
+
+
 class TelegramLogsHandler(logging.Handler):
 
     def __init__(self, tg_bot, chat_id):
@@ -50,7 +53,6 @@ def start_long_polling(url, headers, bot, chat_id, logger):
         except Exception as error:
             logger.exception(error)
             traceback.print_exc()
-            break
 
 
 if __name__ == '__main__':
@@ -62,7 +64,6 @@ if __name__ == '__main__':
     notification_bot = telegram.Bot(token=telegram_notification_token)
     bot = telegram.Bot(token=telegram_token)
 
-    logger = logging.getLogger('Logger')
     logger.setLevel(logging.INFO)
     logger.addHandler(TelegramLogsHandler(notification_bot, telegram_chat_id))
 
