@@ -24,6 +24,16 @@ TELEGRAM_NOTIFICATION_TOKEN=токен для 2 бота уведомлений
 python main.py
 ```
 
+## Запустить в Docker
+Собрать проект
+```
+docker build -t techniciandev93/sending-notifications:v1 .
+```
+Запустить проект
+```
+docker run --env-file .env -d techniciandev93/sending-notifications:v1
+```
+Для установки докера воспользуйтесь [документацией.](https://docs.docker.com/engine/install/)
 ## Примечания
 
 - Для работы скрипта необходимо иметь 2 API-токена Telegram (1 бот для отправки уведомлений о проверенных работах, 2 бот для отправки уведомлений о работе 1 бота). Вы можете получить их, создав ботов через [BotFather](https://core.telegram.org/bots#botfather).
